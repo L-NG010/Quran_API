@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('first_verse_id');
             $table->integer('last_verse_id');
             $table->integer('verses_count');
-            $table->timestamps();
         });
     }
 

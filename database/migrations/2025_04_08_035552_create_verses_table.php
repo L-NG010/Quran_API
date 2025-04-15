@@ -22,7 +22,7 @@ return new class extends Migration
             $table->boolean('sajdah_number');
             $table->integer('page_number');
             $table->integer('juz_number');
-            $table->timestamps();
+            $table->string('teks_arab');
         });
     }
 

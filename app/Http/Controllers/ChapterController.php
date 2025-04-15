@@ -15,6 +15,13 @@ class ChapterController extends Controller
 
     public function getByChapter($noChapter){
         $chapter=chapter::find($noChapter);
+
+        if(!$chapter){
+            return response()->json([
+                'message'=>'chapter not found'
+            ]);
+        }
+
         $script = ScriptText::where('verse_key','LIKE',$noChapter.':%')->get();
         $page_number = verses::where('verse_key','LIKE',$noChapter.':%')->pluck('page_number')->first();
         $juz_number = verses::where('verse_key','LIKE',$noChapter.':%')->pluck('juz_number')->first();

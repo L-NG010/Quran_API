@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('indopak_scripts', function (Blueprint $table) {
+        Schema::create('script_text', function (Blueprint $table) {
             $table->id();
             $table->string('verse_key', 10)->unique();
+            $table->text('text_imlaei');
             $table->text('text_indopak');
-            $table->timestamps();
-
+            $table->text('text_uthmani');
+            $table->text('text_uthmani_tajweed');
+            $table->text('text_uthmani_simple');
+            $table->text('code_v1');
+            $table->text('code_v2');
             $table->index('verse_key');
         });
     }

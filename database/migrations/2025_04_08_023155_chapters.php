@@ -21,7 +21,6 @@ return new class extends Migration
             $table->integer("verses_count");
             $table->json('pages');
             $table->json('translated_name');
-            $table->timestamps();
         });
     }
 

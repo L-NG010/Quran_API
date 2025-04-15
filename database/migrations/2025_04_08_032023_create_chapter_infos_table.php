@@ -18,7 +18,6 @@ return new class extends Migration
             $table->text('short_text');
             $table->text('source');
             $table->text('text');
-            $table->timestamps();
         });
     }
 
