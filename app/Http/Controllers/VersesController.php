@@ -40,7 +40,7 @@ class VersesController extends Controller
     }
 
     public function byChapter($noChapter){
-        $verses=verses::find($noChapter);
+        $verses=verses::where('verse_key', 'LIKE', $noChapter,':%');
         if(!$verses){
             return response()->json([
                 'message'=>' aku kesel cok'
