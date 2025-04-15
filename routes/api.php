@@ -13,21 +13,21 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 //chapters
-Route::get('v1/quran/chapters',[ChapterController::class,'getAllChapters']);
-Route::get('v1/quran/by_chapter/{noChapter}',[ChapterController::class,'getByChapter']);
+Route::get('v1/chapters',[ChapterController::class,'getAllChapters']);
+Route::get('v1/by_chapter/{noChapter}',[ChapterController::class,'getByChapter']);
 
 //chapter info
-Route::get('v1/quran/chapter/{noChapter}/info',[ChapterInfoController::class,'getChapterInfo']);
+Route::get('v1/chapter/{noChapter}/info',[ChapterInfoController::class,'getChapterInfo']);
 
 //verses
-Route::get('v1/quran/verses',[VersesController::class,'getAllVerses']);
-Route::get('v1/quran/by_page/{noPage}',[VersesController::class,'by_page']);
-Route::get('v1/quran/by_verse/{verses}',[VersesController::class,'by_verses']);
-Route::get('v1/quran/verses/by_chapter/{noChapter}',[VersesController::class,'byChapter']);
+Route::get('v1/verses',[VersesController::class,'getAllVerses']);
+Route::get('v1/by_page/{noPage}',[VersesController::class,'by_page']);
+Route::get('v1/by_verse/{verses}',[VersesController::class,'by_verses']);
+Route::get('v1//by_chapter/{noChapter}',[VersesController::class,'byChapter']);
 
 //juz
-Route::get('v1/quran/juzs',[JuzController::class,'getAllJuz']);
-Route::get('v1/quran/by_juz/{juz}',[JuzController::class,'by_juz']);
+Route::get('v1/juzs',[JuzController::class,'getAllJuz']);
+Route::get('v1/by_juz/{juz}',[JuzController::class,'by_juz']);
 
 //searching
-Route::get('v1/quran/search',[SearchingController::class,'searchChapters']);
+Route::get('v1/search',[SearchingController::class,'searchChapters']);
