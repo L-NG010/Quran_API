@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Verses extends Model
 {
   protected $table = 'verses';
+  protected $fillable = [
+    'verse_number', 'verse_key', 'hizb_number', 'rub_el_hizb_number',
+    'ruku_number', 'manzil_number', 'sajdah_number', 'page_number', 'juz_number'
+];
 }
