@@ -10,7 +10,10 @@ use Illuminate\Http\Request;
 class ChapterController extends Controller
 {
     public function getAllChapters(){
-        return chapter::all();
+        $chapter=chapter::all();
+        return response()->json([
+            $chapter
+        ]);
     }
 
     public function getByChapter($noChapter){
@@ -43,7 +46,7 @@ class ChapterController extends Controller
             'verses_count'=>$chapter->verses_count,
             'page_number'=>$page_number,
             'juz_number'=>$juz_number,
-            'translated_name'=>json_encode($chapter->translated_name),
+            'translated_name'=>json_decode($chapter->translated_name),
             'scripts'=>$formattedScripts
         ]);
     }
