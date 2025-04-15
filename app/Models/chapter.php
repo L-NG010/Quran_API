@@ -19,7 +19,7 @@ class chapter extends Model
         'translated_name'
     ];
 
-    protected $cast = [
+    protected $casts = [
         'pages' => 'array',
         'translated_name' => 'array'
     ];
