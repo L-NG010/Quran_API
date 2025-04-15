@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class verses extends Model
+class Verses extends Model
 {
-   
+
 }
