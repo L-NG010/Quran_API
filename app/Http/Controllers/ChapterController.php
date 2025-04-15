@@ -12,7 +12,7 @@ class ChapterController extends Controller
     public function getAllChapters(){
         $chapter=chapter::all();
         return response()->json([
-            $chapter
+            'chapters'=>$chapter
         ]);
     }
 
