@@ -24,6 +24,7 @@ Route::get('v1/verses',[VersesController::class,'getAllVerses']);
 Route::get('v1/verses/by_page/{noPage}',[VersesController::class,'by_page']);
 Route::get('v1/verses/by_verse/{verses}',[VersesController::class,'by_verses']);
 Route::get('v1/verses/by_chapter/{noChapter}',[VersesController::class,'byChapter']);
+Route::get('v1/verses/by_Juz/{noJuz}',[VersesController::class,'byJuz']);
 
 //juz
 Route::get('v1/juzs',[JuzController::class,'getAllJuz']);

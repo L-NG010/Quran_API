@@ -51,4 +51,17 @@ class VersesController extends Controller
             'verses'=>$verses
         ]);
     }
+
+    public function byJuz($noJuz){
+        $verses=verses::where('juz_number',$noJuz)->get();
+        if(!$verses){
+            return response()->json([
+                'message'=>' aku kesel cok'
+            ]);
+        }
+
+        return response()->json([
+            'verses'=>$verses
+        ]);
+    }
 }
