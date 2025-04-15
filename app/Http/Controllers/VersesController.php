@@ -38,4 +38,17 @@ class VersesController extends Controller
             'verse'=>$verses
         ]);
     }
+
+    public function byChapter($noChapter){
+        $verses=verses::find($noChapter);
+        if(!$verses){
+            return response()->json([
+                'message'=>' aku kesel cok'
+            ]);
+        }
+
+        return response()->json([
+            'verses'=>$verses
+        ]);
+    }
 }

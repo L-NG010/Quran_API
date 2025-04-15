@@ -23,6 +23,7 @@ Route::get('v1/quran/chapter/{noChapter}/info',[ChapterInfoController::class,'ge
 Route::get('v1/quran/verses',[VersesController::class,'getAllVerses']);
 Route::get('v1/quran/by_page/{noPage}',[VersesController::class,'by_page']);
 Route::get('v1/quran/by_verse/{verses}',[VersesController::class,'by_verses']);
+Route::get('v1/quran/verses/by_chapter/{noChapter}',[VersesController::class,'byChapter']);
 
 //juz
 Route::get('v1/quran/juzs',[JuzController::class,'getAllJuz']);
