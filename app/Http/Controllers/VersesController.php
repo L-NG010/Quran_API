@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Verses;
+use App\Models\verses;
 use Illuminate\Http\Request;
 
 class VersesController extends Controller
