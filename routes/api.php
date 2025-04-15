@@ -17,12 +17,12 @@ Route::get('v1/chapters',[ChapterController::class,'getAllChapters']);
 Route::get('v1/by_chapter/{noChapter}',[ChapterController::class,'getByChapter']);
 
 //chapter info
-Route::get('v1/chapter/{noChapter}/info',[ChapterInfoController::class,'getChapterInfo']);
+Route::get('v1/chapters/{noChapter}/info',[ChapterInfoController::class,'getChapterInfo']);
 
 //verses
 Route::get('v1/verses',[VersesController::class,'getAllVerses']);
 Route::get('v1/verses/by_page/{noPage}',[VersesController::class,'by_page']);
-Route::get('v1/verses/by_verse/{verses}',[VersesController::class,'by_verses']);
+Route::get('v1/verses/by_key/{verse_key}',[VersesController::class,'by_verses']);
 Route::get('v1/verses/by_chapter/{noChapter}',[VersesController::class,'byChapter']);
 Route::get('v1/verses/by_juz/{noJuz}',[VersesController::class,'byJuz']);
 
