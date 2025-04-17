@@ -45,6 +45,12 @@ class VersesController extends Controller
             'page_number','juz_number'
         ])->get();
 
+        foreach ($verses as $verse) {
+            if ($verse->sajdah_number === 0) {
+                $verse->sajdah_number = null;
+            }
+        }
+
         if ($withWords) {
             $keys    = $verses->pluck('verse_key')->all();
             $grouped = $this->fetchWordsForKeys($keys);
@@ -83,6 +89,12 @@ class VersesController extends Controller
 
         $total  = $base->count();
         $verses = $base->skip($offset)->take($perPage)->get();
+
+        foreach ($verses as $verse) {
+            if ($verse->sajdah_number === 0) {
+                $verse->sajdah_number = null;
+            }
+        }
 
         if ($withWords && $verses->isNotEmpty()) {
             $keys    = $verses->pluck('verse_key')->all();
@@ -128,6 +140,7 @@ class VersesController extends Controller
         }
 
         if ($withWords) {
+            $verse->sajdah_number = null;
             $grouped      = $this->fetchWordsForKeys([$verseKey]);
             $verse->words = $grouped->get($verseKey, collect());
         }
@@ -159,6 +172,12 @@ class VersesController extends Controller
 
         $total  = $base->count();
         $verses = $base->skip($offset)->take($perPage)->get();
+
+        foreach ($verses as $verse) {
+            if ($verse->sajdah_number === 0) {
+                $verse->sajdah_number = null;
+            }
+        }
 
         if ($withWords && $verses->isNotEmpty()) {
             $keys    = $verses->pluck('verse_key')->all();
