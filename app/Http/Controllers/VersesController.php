@@ -49,7 +49,8 @@ class VersesController extends Controller
             'sajdah_number',
             'text_uthmani',
             'page_number',
-            'juz_number'
+            'juz_number',
+            'translations'
         ])->get();
 
         if ($withWords) {
@@ -92,7 +93,8 @@ class VersesController extends Controller
                 'sajdah_number',
                 'text_uthmani',
                 'page_number',
-                'juz_number'
+                'juz_number',
+                'translations'
             ]);
 
         $total  = $base->count();
@@ -141,7 +143,8 @@ class VersesController extends Controller
                 'sajdah_number',
                 'text_uthmani',
                 'page_number',
-                'juz_number'
+                'juz_number',
+                'translations'
             ])->first();
 
         if (! $verse) {
@@ -182,7 +185,8 @@ class VersesController extends Controller
                 'sajdah_number',
                 'text_uthmani',
                 'page_number',
-                'juz_number'
+                'juz_number',
+                'translations'
             ]);
 
         $total  = $base->count();
@@ -234,7 +238,8 @@ class VersesController extends Controller
                 'sajdah_number',
                 'text_uthmani',
                 'page_number',
-                'juz_number'
+                'juz_number',
+                'translations'
             ]);
 
         $total  = $base->count();
