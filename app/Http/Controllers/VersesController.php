@@ -2,47 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Word;
+use App\Models\Verses;
 use Illuminate\Http\Request;
 
 class VersesController extends Controller
 {
-    // helper untuk grouping Word collection jadi array verse-level
-    protected function groupWordsByVerse($words)
-    {
-        // $words: Illuminate\Support\Collection of Word
-        $grouped = $words
-            ->sortBy('location')
-            ->groupBy(function ($w) {
-                // split "1:2:3" → ["1","2","3"], ambil "1:2"
-                [$s, $v, /*$p*/] = explode(':', $w->location);
-                return "$s:$v";
-            });
-
-        // map ke format API: [
-        //   ['verse_key'=>'1:2','verse_number'=>2,'words'=>[...]],
-        //   …
-        // ]
-        return $grouped->map(function ($wordsInVerse, $verseKey) {
-            [, $ayah] = explode(':', $verseKey);
-            return [
-                'verse_key'     => $verseKey,
-                'verse_number'  => (int)$ayah,
-                'words'         => $wordsInVerse->values(),
-            ];
-        })->values();
-    }
-
-    // GET /verses
+    /**
+     * GET /verses
+     * Jika ?words=true maka nested words (tanpa audio_url) akan disertakan.
+     */
     public function getAllVerses(Request $request)
     {
-        $allWords = Word::all();
-        $verses   = $this->groupWordsByVerse($allWords);
+        $withWords = filter_var($request->query('words', false), FILTER_VALIDATE_BOOLEAN);
 
-        return response()->json(['verses' => $verses]);
+        $query = Verses::select([
+            'id',
+            'verse_number',
+            'verse_key',
+            'hizb_number',
+            'rub_el_hizb_number',
+            'ruku_number',
+            'manzil_number',
+            'sajdah_number',
+            'text_uthmani',
+            'page_number',
+            'juz_number',
+        ]);
+
+        if ($withWords) {
+            $query->with(['words' => function($q) {
+                $q->select([
+                    'original_id as id',
+                    'verse_id',
+                    'position',
+                    'char_type_name',
+                    'location',
+                    'text_uthmani',
+                    'page_number',
+                    'line_number',
+                    'text',
+                    'translation_text as translation_text',
+                    'translation_language_name as translation_language_name',
+                    'transliteration_text as transliteration_text',
+                    'transliteration_language_name as transliteration_language_name',
+                ]);
+            }]);
+        }
+
+        $verses = $query->get();
+
+        return response()->json([
+            'verses' => $verses,
+        ]);
     }
 
-    // GET /verses/page/{noPage}?per_page=…&page=…
+    /**
+     * GET /verses/page/{noPage}?per_page=&page=&words=
+     */
     public function by_page($noPage, Request $request)
     {
         if ($noPage < 1 || $noPage > 604) {
@@ -51,60 +67,123 @@ class VersesController extends Controller
 
         $perPage     = (int) $request->query('per_page', 10);
         $currentPage = (int) $request->query('page', 1);
+        $offset      = ($currentPage - 1) * $perPage;
+        $withWords   = filter_var($request->query('words', false), FILTER_VALIDATE_BOOLEAN);
 
-        // ambil semua words di halaman itu
-        $wordsOnPage = Word::where('page_number', $noPage)->get();
+        $query = Verses::where('page_number', $noPage)
+            ->select([
+                'id',
+                'verse_number',
+                'verse_key',
+                'hizb_number',
+                'rub_el_hizb_number',
+                'ruku_number',
+                'manzil_number',
+                'sajdah_number',
+                'text_uthmani',
+                'page_number',
+                'juz_number',
+            ]);
 
-        // grouping per verse lalu paginate
-        $verses = $this->groupWordsByVerse($wordsOnPage);
-        $total  = $verses->count();
+        if ($withWords) {
+            $query->with(['words' => function($q) {
+                $q->select([
+                    'original_id as id',
+                    'verse_id',
+                    'position',
+                    'char_type_name',
+                    'location',
+                    'text_uthmani',
+                    'page_number',
+                    'line_number',
+                    'text',
+                    'translation_text as translation_text',
+                    'translation_language_name as translation_language_name',
+                    'transliteration_text as transliteration_text',
+                    'transliteration_language_name as transliteration_language_name',
+                ]);
+            }]);
+        }
 
-        $sliced = $verses
-            ->slice(($currentPage - 1) * $perPage, $perPage)
-            ->values();
+        $totalRecords = $query->count();
+        $verses       = $query
+            ->skip($offset)
+            ->take($perPage)
+            ->get();
 
-        $totalPages = (int) ceil($total / $perPage);
+        $totalPages = (int) ceil($totalRecords / $perPage);
         $nextPage   = $currentPage < $totalPages ? $currentPage + 1 : null;
 
         return response()->json([
-            'verses'     => $sliced,
+            'verses' => $verses,
             'pagination' => [
                 'per_page'      => $perPage,
                 'current_page'  => $currentPage,
                 'next_page'     => $nextPage,
                 'total_pages'   => $totalPages,
-                'total_records' => $total,
+                'total_records' => $totalRecords,
             ],
         ]);
     }
 
-    // GET /verses/verse/{verseKey}
-    public function by_verse($verseKey)
+    /**
+     * GET /verses/verse/{surah}:{ayah}?words=
+     */
+    public function by_verse($verseKey, Request $request)
     {
-        // validasi format "surah:ayah"
         if (! preg_match('/^\d{1,3}:\d{1,3}$/', $verseKey)) {
             return response()->json(['message' => 'Format verse adalah no_surah:no_ayah'], 400);
         }
 
-        // ambil semua words yang location-nya "1:2:%"
-        $words = Word::where('location', 'like', $verseKey . ':%')
-            ->orderBy('position')
-            ->get();
+        [$surah, $ayah] = explode(':', $verseKey);
+        $withWords      = filter_var($request->query('words', false), FILTER_VALIDATE_BOOLEAN);
 
-        if ($words->isEmpty()) {
+        $query = Verses::where('verse_key', $verseKey)
+            ->select([
+                'id',
+                'verse_number',
+                'verse_key',
+                'hizb_number',
+                'rub_el_hizb_number',
+                'ruku_number',
+                'manzil_number',
+                'sajdah_number',
+                'text_uthmani',
+                'page_number',
+                'juz_number',
+            ]);
+
+        if ($withWords) {
+            $query->with(['words' => function($q) {
+                $q->select([
+                    'original_id as id',
+                    'verse_id',
+                    'position',
+                    'char_type_name',
+                    'location',
+                    'text_uthmani',
+                    'page_number',
+                    'line_number',
+                    'text',
+                    'translation_text as translation_text',
+                    'translation_language_name as translation_language_name',
+                    'transliteration_text as transliteration_text',
+                    'transliteration_language_name as transliteration_language_name',
+                ]);
+            }]);
+        }
+
+        $verse = $query->first();
+        if (! $verse) {
             return response()->json(['message' => 'Verse tidak ditemukan'], 404);
         }
 
-        return response()->json([
-            'verse' => [
-                'verse_key'    => $verseKey,
-                'verse_number' => (int) explode(':', $verseKey)[1],
-                'words'        => $words,
-            ]
-        ]);
+        return response()->json(['verse' => $verse]);
     }
 
-    // GET /verses/chapter/{chapter}?per_page=…&page=…
+    /**
+     * GET /verses/chapter/{chapter}?per_page=&page=&words=
+     */
     public function byChapter($chapter, Request $request)
     {
         if ($chapter < 1 || $chapter > 114) {
@@ -113,27 +192,131 @@ class VersesController extends Controller
 
         $perPage     = (int) $request->query('per_page', 286);
         $currentPage = (int) $request->query('page', 1);
+        $offset      = ($currentPage - 1) * $perPage;
+        $withWords   = filter_var($request->query('words', false), FILTER_VALIDATE_BOOLEAN);
 
-        // ambil semua words di chapter itu
-        $words = Word::where('location', 'like', $chapter . ':%')->get();
+        $query = Verses::where('verse_key', 'LIKE', $chapter . ':%')
+            ->select([
+                'id',
+                'verse_number',
+                'verse_key',
+                'hizb_number',
+                'rub_el_hizb_number',
+                'ruku_number',
+                'manzil_number',
+                'sajdah_number',
+                'text_uthmani',
+                'page_number',
+                'juz_number',
+            ]);
 
-        // grouping per verse lalu paginate
-        $verses      = $this->groupWordsByVerse($words);
-        $total       = $verses->count();
-        $sliced      = $verses
-            ->slice(($currentPage - 1) * $perPage, $perPage)
-            ->values();
-        $totalPages  = (int) ceil($total / $perPage);
-        $nextPage    = $currentPage < $totalPages ? $currentPage + 1 : null;
+        if ($withWords) {
+            $query->with(['words' => function($q) {
+                $q->select([
+                    'original_id as id',
+                    'verse_id',
+                    'position',
+                    'char_type_name',
+                    'location',
+                    'text_uthmani',
+                    'page_number',
+                    'line_number',
+                    'text',
+                    'translation_text as translation_text',
+                    'translation_language_name as translation_language_name',
+                    'transliteration_text as transliteration_text',
+                    'transliteration_language_name as transliteration_language_name',
+                ]);
+            }]);
+        }
+
+        $totalRecords = $query->count();
+        $verses       = $query
+            ->skip($offset)
+            ->take($perPage)
+            ->get();
+
+        $totalPages = (int) ceil($totalRecords / $perPage);
+        $nextPage   = $currentPage < $totalPages ? $currentPage + 1 : null;
 
         return response()->json([
-            'verses'     => $sliced,
+            'verses' => $verses,
             'pagination' => [
                 'per_page'      => $perPage,
                 'current_page'  => $currentPage,
                 'next_page'     => $nextPage,
                 'total_pages'   => $totalPages,
-                'total_records' => $total,
+                'total_records' => $totalRecords,
+            ],
+        ]);
+    }
+
+    /**
+     * GET /verses/juz/{juz}?per_page=&page=&words=
+     */
+    public function byJuz($juz, Request $request)
+    {
+        if ($juz < 1 || $juz > 30) {
+            return response()->json(['message' => 'Juz hanya dari 1 sampai 30'], 400);
+        }
+
+        $perPage     = (int) $request->query('per_page', 10);
+        $currentPage = (int) $request->query('page', 1);
+        $offset      = ($currentPage - 1) * $perPage;
+        $withWords   = filter_var($request->query('words', false), FILTER_VALIDATE_BOOLEAN);
+
+        $query = Verses::where('juz_number', $juz)
+            ->select([
+                'id',
+                'verse_number',
+                'verse_key',
+                'hizb_number',
+                'rub_el_hizb_number',
+                'ruku_number',
+                'manzil_number',
+                'sajdah_number',
+                'text_uthmani',
+                'page_number',
+                'juz_number',
+            ]);
+
+        if ($withWords) {
+            $query->with(['words' => function($q) {
+                $q->select([
+                    'original_id as id',
+                    'verse_id',
+                    'position',
+                    'char_type_name',
+                    'location',
+                    'text_uthmani',
+                    'page_number',
+                    'line_number',
+                    'text',
+                    'translation_text as translation_text',
+                    'translation_language_name as translation_language_name',
+                    'transliteration_text as transliteration_text',
+                    'transliteration_language_name as transliteration_language_name',
+                ]);
+            }]);
+        }
+
+        $totalRecords = $query->count();
+        $verses       = $query
+            ->skip($offset)
+            ->take($perPage)
+            ->get();
+
+        $totalPages = (int) ceil($totalRecords / $totalRecords);
+        $nextPage   = $currentPage < $totalPages ? $currentPage + 1 : null;
+
+        return response()->json([
+            'verses' => $verses,
+            'pagination' => [
+                'per_page'      => $perPage,
+                'current_page'  => $currentPage,
+                'next_page'     => $nextPage,
+                'total_pages'   => $totalPages,
+                'total_records' => $totalRecords,
             ],
         ]);
     }
