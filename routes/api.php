@@ -22,7 +22,7 @@ Route::get('v1/chapters/{noChapter}/info',[ChapterInfoController::class,'getChap
 //verses
 Route::get('v1/verses',[VersesController::class,'getAllVerses']);
 Route::get('v1/verses/by_page/{noPage}',[VersesController::class,'by_page']);
-Route::get('v1/verses/by_key/{verse_key}',[VersesController::class,'by_verses']);
+Route::get('v1/verses/by_key/{verse_key}',[VersesController::class,'by_verse']);
 Route::get('v1/verses/by_chapter/{noChapter}',[VersesController::class,'byChapter']);
 Route::get('v1/verses/by_juz/{noJuz}',[VersesController::class,'byJuz']);
 
