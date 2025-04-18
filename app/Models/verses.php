@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Verses extends Model
 {
+
+protected $casts = [
+    "translations"=>"array"
+];
   protected $table = 'verses';
   protected $fillable = [
     'verse_number', 'verse_key', 'hizb_number', 'rub_el_hizb_number',
