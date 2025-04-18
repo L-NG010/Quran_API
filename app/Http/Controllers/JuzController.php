@@ -9,7 +9,11 @@ use Illuminate\Http\Request;
 class JuzController extends Controller
 {
     public function getAllJuz(){
-        return juz::all();
+        $juz=juz::all();
+
+        return response()->json([
+            "juzs"=>$juz
+        ]);
     }
 
     public function by_juz($noJuz){

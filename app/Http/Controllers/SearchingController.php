@@ -47,6 +47,7 @@ class SearchingController extends Controller
                     'text_arab' => $verse->teks_arab,
                     'juz_number' => $verse->juz_number,
                     'page_number' => $verse->page_number,
+                    'text_uthmani' => $verse->text_uthmani,
                 ];
             });
 
@@ -73,6 +74,7 @@ class SearchingController extends Controller
                     'text_arab' => $verse->teks_arab,
                     'juz_number' => $verse->juz_number,
                     'page_number' => $verse->page_number,
+                    'text_uthmani' => $verse->text_uthmani
                 ];
             });
 
