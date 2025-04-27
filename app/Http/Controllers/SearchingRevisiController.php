@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Chapter;
+use App\Models\chapter;
 use App\Models\verses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -97,7 +97,7 @@ class SearchingRevisiController extends Controller
             }
 
             $chapterId = (int) explode(':', $verseKey)[0];
-            $chapter = Chapter::find($chapterId);
+            $chapter = chapter::find($chapterId);
             if (!$chapter) {
                 return response()->json([
                     'query' => $query,
@@ -130,7 +130,7 @@ class SearchingRevisiController extends Controller
     protected function resolveSurahResultsById(int $id): array
     {
         try {
-            $chapter = Chapter::find($id);
+            $chapter = chapter::find($id);
             return $chapter ? [$this->getSurahDetail($chapter->id)] : [];
         } catch (\Exception $e) {
             Log::error('resolveSurahResultsById error: ' . $e->getMessage(), [
@@ -179,7 +179,7 @@ class SearchingRevisiController extends Controller
     protected function getSurahDetail(int $id): array
     {
         try {
-            $chapter = Chapter::find($id);
+            $chapter = chapter::find($id);
             if (!$chapter) {
                 return [];
             }
@@ -231,7 +231,7 @@ class SearchingRevisiController extends Controller
             $res = [];
             $grouped = $verses->groupBy(fn ($v) => explode(':', $v->verse_key)[0]);
             foreach ($grouped as $cid => $vs) {
-                $c = Chapter::find((int) $cid);
+                $c = chapter::find((int) $cid);
                 if (!$c) {
                     continue;
                 }
