@@ -4,6 +4,8 @@ use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\ChapterInfoController;
 use App\Http\Controllers\JuzController;
 use App\Http\Controllers\SearchingController;
+use App\Http\Controllers\SearchingRevisiController;
+use App\Http\Controllers\SetoranController;
 use App\Http\Controllers\VersesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,4 +33,10 @@ Route::get('v1/juzs',[JuzController::class,'getAllJuz']);
 Route::get('v1/by_juz/{juz}',[JuzController::class,'by_juz']);
 
 //searching
-Route::get('v1/search',[SearchingController::class,'searchChapters']);
+Route::get('v1/search',[SearchingController::class,'search']);
+Route::get('v1/v2/search',[SearchingRevisiController::class,'search']);
+
+//API LINK ID QURANNI
+
+//Setoran
+Route::post('v1/setoran',[SetoranController::class,'getSetoran']);
