@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chapter;
-use App\Models\Verses;
+use App\Models\verses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -87,7 +87,7 @@ class SearchingRevisiController extends Controller
     protected function searchSpecificVerse(string $verseKey, string $query)
     {
         try {
-            $verse = Verses::where('verse_key', $verseKey)->first();
+            $verse = verses::where('verse_key', $verseKey)->first();
             if (!$verse) {
                 return response()->json([
                     'query' => $query,
@@ -199,7 +199,7 @@ class SearchingRevisiController extends Controller
     protected function getVersesByPage(int $page): array
     {
         try {
-            $verses = Verses::where('page_number', $page)->get();
+            $verses = verses::where('page_number', $page)->get();
             return $this->groupVersesWithoutWords($verses, 'page', $page);
         } catch (\Exception $e) {
             Log::error('getVersesByPage error: ' . $e->getMessage(), [
@@ -212,7 +212,7 @@ class SearchingRevisiController extends Controller
     protected function getVersesByJuz(int $juz): array
     {
         try {
-            $verses = Verses::where('juz_number', $juz)->get();
+            $verses = verses::where('juz_number', $juz)->get();
             return $this->groupVersesWithoutWords($verses, 'juz', $juz);
         } catch (\Exception $e) {
             Log::error('getVersesByJuz error: ' . $e->getMessage(), [
