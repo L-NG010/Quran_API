@@ -10,4 +10,5 @@ class Word extends Model
         'translation'=>'array',
         'transliteration'=>'array'
     ];
+    protected $hidden=['created_at','updated_at'];
 }

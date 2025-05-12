@@ -15,4 +15,5 @@ protected $casts = [
     'verse_number', 'verse_key', 'hizb_number', 'rub_el_hizb_number',
     'ruku_number', 'manzil_number', 'sajdah_number', 'page_number', 'juz_number'
 ];
+protected $hidden = ['manzil_number','rub_el_hizb_number','hizb_number','ruku_number','translations'];
 }
